@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Results Async Loaded</title>
+    <script src="http://fb.me/react-0.13.1.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://css-spinners.com/css/spinner/spinner.css" type="text/css">
+  </head>
+
+  <body>
+    <div id="main-container">
+    </div>
+    <script type="text/javascript" src="/js/common/is-visible.js"></script>
+    <script type="text/jsx" src="/js/react/infinite-scroll/infinite-scroll.react.js"></script>
+    <script type="text/jsx">
+      var getNextPageUrl = function(offset, count) {
+        return "http://codeforces.com/api/user.status?handle=stoundmire&from=" + (offset + 1).toString() + "&count=" + count.toString();
+      }
+      var fetch = function(url, scrollPane) {
+        var moreItem = scrollPane.refs.moreItem;
+        // temporarily deactivate the more item unit
+        moreItem.setState({active: false});
+        $.ajax({
+          url: url,
+          dataType: "jsonp",
+          jsonp: "jsonp",
+          success: function (response) {
+            var offset = scrollPane.state.offset;
+            var count = scrollPane.props.count;
+            moreResults = response.result;
+            noMore = moreResults.length < count;
+            scrollPane.setState({
+              offset: offset + count,
+              results: scrollPane.state.results.concat(moreResults),
+              noMore: noMore,
+            });
+            if (!noMore) {
+              // need to reactivate here since this ajax call
+              // is asynchronous
+              moreItem.setState({active: true});
+            }
+          }
+        });
+      }
+      var renderItem = function(result) {
+        return (
+          <div key={result.id}>
+            <p>{result.id} {result.programmingLanguage}: {result.verdict}</p>
+          </div>
+        );
+      };
+      React.render(
+        <InfiniteScroll getNextPageUrl={getNextPageUrl} fetch={fetch} renderItem={renderItem} count={20} />,
+        document.getElementById('main-container')
+      );
+    </script>
+  </body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>All Results Provided</title>
+    <script src="http://fb.me/react-0.13.1.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://css-spinners.com/css/spinner/spinner.css" type="text/css">
+  </head>
+
+  <body>
+    <div id="main-container">
+    </div>
+    <script type="text/javascript" src="/js/common/is-visible.js"></script>
+    <script type="text/jsx" src="/js/react/infinite-scroll/infinite-scroll.react.js"></script>
+    <script type="text/jsx">
+      var results = [
+      ];
+      for (i = 0; i < 97; ++i) {
+        results.push({
+          id: i,
+          author: "user".concat(i),
+          comment: "Sentence ".concat(i),
+        });
+      }
+      var renderItem = function(result) {
+        return (
+          <div key={result.id}>
+            <p>{result.author}: {result.comment}</p>
+          </div>
+        );
+      };
+      React.render(
+        <InfiniteScroll allResults={results} renderItem={renderItem} count={20} />,
+        document.getElementById('main-container')
+      );
+    </script>
+  </body>
+
+</html>
