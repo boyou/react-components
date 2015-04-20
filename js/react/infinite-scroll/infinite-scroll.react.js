@@ -15,10 +15,12 @@
  * - All results are fetched at once
  *   This is provided as the allResults property
  * - The results for one page are fetched when needed
- *   This is controlled by the callback property
- *   getNextPageUrl(offset, count).
- *   The callback property fetchPage(url, component) will fetch the
- *   result, and update the results state asynchronously.
+ *   The callback property getNextPageUrl(offset, count) determines
+ *   how to construct the url,
+ *   the callback property parseResponse(response) dtermines how to
+ *   parse the async results,
+ *   the property type will specify the type of the async fetching,
+ *   and the property options will give the options for fetching.
  *
  *
  * The current offset, results already displayed and
@@ -33,15 +35,42 @@ var InfiniteScroll = React.createClass({
       noMore: false,
     };
   },
+  fetchJsonp: function() {
+    // TODO: check the options property
+    var scrollPane = this;
+    var offset = scrollPane.state.offset;
+    var count = scrollPane.props.count;
+    var moreItem = scrollPane.refs.moreItem;
+    // temporarily deactivate the more item unit
+    moreItem.setState({active: false});
+    var defaults = {
+      url: this.props.getNextPageUrl(offset, count),
+      dataType: "jsonp",
+      success: function (response) {
+        moreResults = scrollPane.props.parseResponse(response);
+        noMore = moreResults.length < count;
+        scrollPane.setState({
+          offset: offset + count,
+          results: scrollPane.state.results.concat(moreResults),
+          noMore: noMore,
+        });
+        if (!noMore) {
+          // need to reactivate here since this ajax call
+          // is asynchronous
+          moreItem.setState({active: true});
+        }
+      }
+    };
+    var settings = jQuery.extend({}, defaults, this.props.options);
+    $.ajax(settings);
+  },
   loadMore: function() {
-    var offset = this.state.offset;
-    var count = this.props.count;
-    var results;
-    var noMore;
     if (this.props.allResults) {
       // all results are provided, just slice
-      results = this.props.allResults.slice(0, offset + count);
-      noMore = offset + count >= this.props.allResults.length;
+      var offset = this.state.offset;
+      var count = this.props.count;
+      var results = this.props.allResults.slice(0, offset + count);
+      var noMore = offset + count >= this.props.allResults.length;
       this.setState({
         offset: offset + count,
         results: results,
@@ -49,7 +78,15 @@ var InfiniteScroll = React.createClass({
       });
     } else {
       // need to fetch asynchronously
-      this.props.fetch(this.props.getNextPageUrl(offset, count), this);
+      switch (this.props.type) {
+        case 'jsonp':
+          this.fetchJsonp();
+          break;
+        // TODO: support more types
+        default:
+          console.warn("Unsupported Type!");
+          break;
+      }
     }
   },
   componentDidMount: function() {

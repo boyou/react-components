@@ -18,33 +18,11 @@
     <script type="text/jsx">
       var getNextPageUrl = function(offset, count) {
         return "http://codeforces.com/api/user.status?handle=stoundmire&from=" + (offset + 1).toString() + "&count=" + count.toString();
-      }
-      var fetch = function(url, scrollPane) {
-        var moreItem = scrollPane.refs.moreItem;
-        // temporarily deactivate the more item unit
-        moreItem.setState({active: false});
-        $.ajax({
-          url: url,
-          dataType: "jsonp",
-          jsonp: "jsonp",
-          success: function (response) {
-            var offset = scrollPane.state.offset;
-            var count = scrollPane.props.count;
-            moreResults = response.result;
-            noMore = moreResults.length < count;
-            scrollPane.setState({
-              offset: offset + count,
-              results: scrollPane.state.results.concat(moreResults),
-              noMore: noMore,
-            });
-            if (!noMore) {
-              // need to reactivate here since this ajax call
-              // is asynchronous
-              moreItem.setState({active: true});
-            }
-          }
-        });
-      }
+      };
+      var options = {jsonp: "jsonp"};
+      var parseResponse = function(response) {
+        return response.result;
+      };
       var renderItem = function(result) {
         return (
           <div key={result.id}>
@@ -53,7 +31,10 @@
         );
       };
       React.render(
-        <InfiniteScroll getNextPageUrl={getNextPageUrl} fetch={fetch} renderItem={renderItem} count={20} />,
+        <InfiniteScroll
+          getNextPageUrl={getNextPageUrl} type="jsonp"
+          options={options} parseResponse={parseResponse}
+          renderItem={renderItem} count={20} />,
         document.getElementById('main-container')
       );
     </script>
