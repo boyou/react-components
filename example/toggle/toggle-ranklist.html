@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Codeforces Contest List</title>
+    <script src="http://fb.me/react-0.13.1.js"></script>
+    <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://css-spinners.com/css/spinner/spinner.css" type="text/css">
+  </head>
+
+  <body>
+    <div id="main-container">
+    </div>
+    <script type="text/javascript" src="/js/common/is-visible.js"></script>
+    <script type="text/jsx" src="/js/react/infinite-scroll/infinite-scroll.react.js"></script>
+    <script type="text/jsx" src="/js/react/toggle/toggle.react.js"></script>
+    <script type="text/jsx">
+      var options = {jsonp: "jsonp"};
+      var parseResponse = function(response) {
+        return response.result.rows;
+      };
+      var renderRow = function(row) {
+        var firstMember = row.party.members[0];
+        return <span key={firstMember.handle}>{firstMember.handle}: {row.points}<br/></span>;
+      };
+      var customStyle= {
+        height: "150px",
+        width: "400px",
+      };
+      var getContestStandingScroll = function(contestId) {
+        var getNextPageUrl = function(offset, count) {
+          var ret =
+            "http://codeforces.com/api/contest.standings?contestId=" + contestId.toString() +
+              "&from=" + (offset + 1).toString() + "&count=" + count.toString();
+          return ret;
+        };
+        var ret =
+          <InfiniteScroll
+            getNextPageUrl={getNextPageUrl} type="jsonp"
+            customStyle={customStyle}
+            options={options} parseResponse={parseResponse}
+            renderItem={renderRow} count={20}
+          />;
+        return ret;
+      };
+      var renderContest = function(contest) {
+        return <div key={contest.id}><span>{contest.name}</span><Toggle content={getContestStandingScroll(contest.id)} customStyle={customStyle} /></div>;
+      };
+      $.ajax({
+        url: "http://codeforces.com/api/contest.list",
+        dataType: "jsonp",
+        jsonp: "jsonp",
+        success: function(response) {
+          React.render(
+            <InfiniteScroll
+              allResults={response.result.filter(function(contest){return contest.phase === 'FINISHED';})}
+              customStyle={{height: "600px", width: "700px"}}
+              renderItem={renderContest}
+              count={50}
+            />,
+            document.getElementById('main-container')
+          );
+        },
+      });
+    </script>
+  </body>
+
+</html>

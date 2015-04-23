@@ -94,35 +94,51 @@ var InfiniteScroll = React.createClass({
   },
   loadMoreOnScroll: function() {
     var moreItem = this.refs.moreItem;
-    // no more item to show
-    if (!React.findDOMNode(moreItem)) {
-      return;
+    // neither no more item to show
+    // nor a page is being loaded now
+    if (React.findDOMNode(moreItem) !== null && moreItem.state.active) {
+      if (isVisible(React.findDOMNode(moreItem))) {
+        this.loadMore();
+      }
     }
-    // a page is being loaded now
-    if (!moreItem.state.active) {
-      return;
-    }
-    if (isVisible(React.findDOMNode(moreItem))) {
-      this.loadMore();
-    }
+    // TODO: stop scrolling parents
   },
   render: function() {
     var renderItem = this.props.renderItem;
     var items = this.state.results.map(function(result) {
       return renderItem(result);
     });
-    return !this.state.noMore ?
+    var outterStyle = {
+      position: "relative",
+      overflowY: "hidden",
+      overflowX: "auto",
+      height: "500px",
+    };
+    jQuery.extend(outterStyle, this.props.customStyle);
+    var wrapperStyle = {
+      position: "absolute",
+      overflowX: "auto",
+      overflowY: "scroll",
+      height: outterStyle.height,
+      width: outterStyle.width,
+    };
+    var scrollAreaWrapper = !this.state.noMore ?
       (
-        <div ref="results" onWheel={this.loadMoreOnScroll}>
+        <div ref="results" style={wrapperStyle} onScroll={this.loadMoreOnScroll}>
           {items}
           <MoreItem ref="moreItem" />
         </div>
       ) :
       (
-        <div ref="results">
+        <div ref="results" style={wrapperStyle}>
           {items}
         </div>
       );
+    var ret =
+      <div style={outterStyle}>
+        {scrollAreaWrapper}
+      </div>;
+    return ret;
   },
 });
 

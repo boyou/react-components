@@ -33,6 +33,7 @@
       React.render(
         <InfiniteScroll
           getNextPageUrl={getNextPageUrl} type="jsonp"
+		  customStyle={{width: "60%"}}
           options={options} parseResponse={parseResponse}
           renderItem={renderItem} count={20} />,
         document.getElementById('main-container')

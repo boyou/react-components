@@ -33,7 +33,12 @@
         );
       };
       React.render(
-        <InfiniteScroll allResults={results} renderItem={renderItem} count={20} />,
+        <InfiniteScroll
+		  allResults={results}
+		  renderItem={renderItem}
+		  customStyle={{width: "250px"}}
+		  count={20}
+		/>,
         document.getElementById('main-container')
       );
     </script>
