@@ -1,0 +1,9 @@
+span.RanklistHandle {
+  float: left;
+}
+span.RanklistHandle a {
+  text-decoration: none;
+}
+span.RanklistPoints {
+  float: right;
+}

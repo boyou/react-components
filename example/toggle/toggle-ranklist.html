@@ -8,6 +8,7 @@
     <script src="http://fb.me/JSXTransformer-0.13.1.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <link rel="stylesheet" href="http://css-spinners.com/css/spinner/spinner.css" type="text/css">
+    <link rel="stylesheet" href="/css/example/toggle-ranklist.css" type="text/css">
   </head>
 
   <body>
@@ -24,7 +25,15 @@
       };
       var renderRow = function(row) {
         var firstMember = row.party.members[0];
-        return <span key={firstMember.handle}>{firstMember.handle}: {row.points}<br/></span>;
+        var handleLink = "http://codeforces.com/profile/".concat(firstMember.handle);
+        console.log(handleLink);
+        return (
+          <span className="clearfix" key={firstMember.handle}>
+            <span className="RanklistHandle"><a href={handleLink} target="_blank">{firstMember.handle}</a></span>
+            <span className="RanklistPoints">{row.points}</span>
+            <br/>
+          </span>
+        );
       };
       var customStyle= {
         height: "150px",
