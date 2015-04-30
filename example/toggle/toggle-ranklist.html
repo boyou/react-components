@@ -14,6 +14,7 @@
     <div id="main-container">
     </div>
     <script type="text/javascript" src="/js/common/is-visible.js"></script>
+    <script type="text/javascript" src="/js/common/jquery-scrollLock.min.js"></script>
     <script type="text/jsx" src="/js/react/infinite-scroll/infinite-scroll.react.js"></script>
     <script type="text/jsx" src="/js/react/toggle/toggle.react.js"></script>
     <script type="text/jsx">
@@ -56,7 +57,7 @@
           React.render(
             <InfiniteScroll
               allResults={response.result.filter(function(contest){return contest.phase === 'FINISHED';})}
-              customStyle={{height: "600px", width: "700px"}}
+              customStyle={{height: "600px", width: "900px"}}
               renderItem={renderContest}
               count={50}
             />,

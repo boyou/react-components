@@ -101,7 +101,12 @@ var InfiniteScroll = React.createClass({
         this.loadMore();
       }
     }
-    // TODO: stop scrolling parents
+  },
+  mouseOver: function() {
+    $(React.findDOMNode(this.refs.results)).scrollLock();
+  },
+  mouseOut: function() {
+    $(React.findDOMNode(this.refs.results)).scrollLock('off');
   },
   render: function() {
     var renderItem = this.props.renderItem;
@@ -118,19 +123,25 @@ var InfiniteScroll = React.createClass({
     var wrapperStyle = {
       position: "absolute",
       overflowX: "auto",
-      overflowY: "scroll",
+      overflowY: "auto",
       height: outterStyle.height,
       width: outterStyle.width,
     };
     var scrollAreaWrapper = !this.state.noMore ?
       (
-        <div ref="results" style={wrapperStyle} onScroll={this.loadMoreOnScroll}>
+        <div
+          className="ScrollableArea" ref="results"
+          style={wrapperStyle} onScroll={this.loadMoreOnScroll}
+          onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}>
           {items}
           <MoreItem ref="moreItem" />
         </div>
       ) :
       (
-        <div ref="results" style={wrapperStyle}>
+        <div
+          className="ScrollableArea" ref="results"
+          style={wrapperStyle}
+          onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}>
           {items}
         </div>
       );
