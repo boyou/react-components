@@ -26,7 +26,6 @@
       var renderRow = function(row) {
         var firstMember = row.party.members[0];
         var handleLink = "http://codeforces.com/profile/".concat(firstMember.handle);
-        console.log(handleLink);
         return (
           <span className="clearfix" key={firstMember.handle}>
             <span className="RanklistHandle"><a href={handleLink} target="_blank">{firstMember.handle}</a></span>
